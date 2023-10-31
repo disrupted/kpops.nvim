@@ -1,9 +1,23 @@
 local lspconfig = require('lspconfig')
 local configs = require('lspconfig.configs')
+local utils = require('kpops.utils')
 
 local M = {}
 
+local generate_schema_pipeline = function(module)
+  local result = vim.system({ 'kpops', 'schema', 'pipeline', module }, { text = false }):wait()
+  if result.code ~= 0 then
+    vim.notify(
+      ('KPOps error generating pipeline schema: %s'):format(result.stderr),
+      vim.log.levels.ERROR
+    )
+    return
+  end
+  utils.write_file('pipeline.json', result.stdout)
+end
+
 M.setup = function(conf)
+  generate_schema_pipeline()
   configs.kpops = {
     -- https://github.com/redhat-developer/yaml-language-server
     default_config = {
@@ -30,28 +44,28 @@ M.setup = function(conf)
           },
         },
       },
-    },
-    handlers = {
-      ['textDocument/publishDiagnostics'] = function(err, result, ctx, config)
-        result.diagnostics = vim.tbl_filter(function(diagnostic)
-          -- HACK: disable diagnostics for KPOps defaults (until a schema exists for it)
-          -- otherwise it uses the schema for ansible defaults
-          if result.uri:match('defaults[_%w]*.yaml') then
-            return false
-          end
+      handlers = {
+        ['textDocument/publishDiagnostics'] = function(err, result, ctx, config)
+          result.diagnostics = vim.tbl_filter(function(diagnostic)
+            -- HACK: disable diagnostics for KPOps defaults (until a schema exists for it)
+            -- otherwise it uses the schema for ansible defaults
+            if result.uri:match('defaults[_%w]*.yaml') then
+              return false
+            end
 
-          -- disable diagnostics for missing property
-          -- these could be defined in the defaults (for pipeline.yaml)
-          -- or as environment variables (for config.yaml)
-          if diagnostic.message:match('Missing property ') then
-            return false
-          end
+            -- disable diagnostics for missing property
+            -- these could be defined in the defaults (for pipeline.yaml)
+            -- or as environment variables (for config.yaml)
+            if diagnostic.message:match('Missing property ') then
+              return false
+            end
 
-          return true
-        end, result.diagnostics)
+            return true
+          end, result.diagnostics)
 
-        vim.lsp.handlers['textDocument/publishDiagnostics'](err, result, ctx, config)
-      end,
+          vim.lsp.handlers['textDocument/publishDiagnostics'](err, result, ctx, config)
+        end,
+      },
     },
   }
   lspconfig.kpops.setup(conf)

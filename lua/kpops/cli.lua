@@ -1,5 +1,3 @@
-local utils = require('kpops.utils')
-
 local M = {}
 
 M.schema = function(scope, module)
@@ -11,7 +9,7 @@ M.schema = function(scope, module)
     )
     return
   end
-  utils.write_file(('%s.json'):format(scope), result.stdout)
+  return result.stdout
 end
 
 return M

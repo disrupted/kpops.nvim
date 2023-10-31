@@ -1,22 +1,34 @@
 local kpops = require('kpops.cli')
+local utils = require('kpops.utils')
 local lspconfig = require('lspconfig')
 local configs = require('lspconfig.configs')
 
 local M = {}
 
-M.setup = function(conf)
-  kpops.schema('pipeline')
+local function is_kpops_file(filename)
+  return filename:match('pipeline[_%w]*.yaml') or filename:match('config.yaml')
+end
 
+local function prepare(cwd)
+  local schema_pipeline = kpops.schema('pipeline')
+  utils.write_file(cwd .. '/pipeline.json', schema_pipeline)
+end
+
+M.setup = function(conf)
   configs.kpops = {
     -- https://github.com/redhat-developer/yaml-language-server
     default_config = {
       cmd = { 'yaml-language-server', '--stdio' },
       filetypes = { 'yaml' },
       root_dir = function(filename)
-        if not filename:match('pipeline[_%w]*.yaml') and not filename:match('config.yaml') then
+        if not is_kpops_file(filename) then
           return nil -- not a KPOps project, abort LSP startup
         end
-        return lspconfig.util.find_git_ancestor(filename) or vim.loop.cwd()
+
+        local cwd = lspconfig.util.find_git_ancestor(filename) or vim.loop.cwd()
+        prepare(cwd)
+
+        return cwd
       end,
       single_file_support = false,
       settings = {

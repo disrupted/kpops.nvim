@@ -1,8 +1,8 @@
-local example = require('kpops').example
+local setup = require('kpops').setup
 
 describe('neovim plugin', function()
   it('work as expect', function()
-    local result = example()
+    local result = setup()
     assert.is_true(result)
   end)
 end)

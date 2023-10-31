@@ -14,6 +14,8 @@ YAML language server
 <https://github.com/redhat-developer/yaml-language-server>.
 
 
+
+
 INSTALLATION                                   *kpops-kpops.nvim-installation*
 
 example using Lazy <https://github.com/folke/lazy.nvim> plugin manager

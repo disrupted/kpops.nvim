@@ -1,23 +1,12 @@
+local kpops = require('kpops.cli')
 local lspconfig = require('lspconfig')
 local configs = require('lspconfig.configs')
-local utils = require('kpops.utils')
 
 local M = {}
 
-local generate_schema_pipeline = function(module)
-  local result = vim.system({ 'kpops', 'schema', 'pipeline', module }, { text = false }):wait()
-  if result.code ~= 0 then
-    vim.notify(
-      ('KPOps error generating pipeline schema: %s'):format(result.stderr),
-      vim.log.levels.ERROR
-    )
-    return
-  end
-  utils.write_file('pipeline.json', result.stdout)
-end
-
 M.setup = function(conf)
-  generate_schema_pipeline()
+  kpops.schema('pipeline')
+
   configs.kpops = {
     -- https://github.com/redhat-developer/yaml-language-server
     default_config = {

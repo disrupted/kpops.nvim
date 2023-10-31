@@ -1,11 +1,32 @@
 local lspconfig = require('lspconfig')
+local configs = require('lspconfig.configs')
+local util = require('lspconfig.util')
 
 local M = {}
 
 M.setup = function(conf)
-  -- https://github.com/redhat-developer/yaml-language-server
-  lspconfig.yamlls.setup({
-    filetypes = { 'yaml' },
+  configs.kpops = {
+    -- https://github.com/redhat-developer/yaml-language-server
+    default_config = {
+      cmd = { 'yaml-language-server', '--stdio' },
+      filetypes = { 'yaml' },
+      root_dir = util.find_git_ancestor,
+      single_file_support = true,
+      settings = {
+        -- https://github.com/redhat-developer/vscode-redhat-telemetry#how-to-disable-telemetry-reporting
+        redhat = { telemetry = { enabled = false } },
+        yaml = {
+          editor = { formatOnType = true },
+          schemas = {
+            ['pipeline.json'] = {
+              'pipeline.yaml',
+              'pipeline_*.yaml',
+            },
+            ['https://github.com/bakdata/kpops/raw/main/docs/docs/schema/config.json'] = 'config.yaml',
+          },
+        },
+      },
+    },
     handlers = {
       ['textDocument/publishDiagnostics'] = function(err, result, ctx, config)
         result.diagnostics = vim.tbl_filter(function(diagnostic)
@@ -36,19 +57,8 @@ M.setup = function(conf)
         vim.lsp.handlers['textDocument/publishDiagnostics'](err, result, ctx, config)
       end,
     },
-    settings = {
-      yaml = {
-        editor = { formatOnType = true },
-        schemas = {
-          ['pipeline.json'] = {
-            'pipeline.yaml',
-            'pipeline_*.yaml',
-          },
-          ['https://github.com/bakdata/kpops/raw/main/docs/docs/schema/config.json'] = 'config.yaml',
-        },
-      },
-    },
-  })
+  }
+  lspconfig.kpops.setup(conf)
 end
 
 return M

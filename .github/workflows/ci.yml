@@ -18,6 +18,10 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     name: pandoc to vimdoc
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v3

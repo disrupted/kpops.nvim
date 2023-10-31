@@ -1,6 +1,5 @@
 local lspconfig = require('lspconfig')
 local configs = require('lspconfig.configs')
-local util = require('lspconfig.util')
 
 local M = {}
 
@@ -10,8 +9,13 @@ M.setup = function(conf)
     default_config = {
       cmd = { 'yaml-language-server', '--stdio' },
       filetypes = { 'yaml' },
-      root_dir = util.find_git_ancestor,
-      single_file_support = true,
+      root_dir = function(filename)
+        if not filename:match('pipeline[_%w]*.yaml') and not filename:match('config.yaml') then
+          return nil -- not a KPOps project, abort LSP startup
+        end
+        return lspconfig.util.find_git_ancestor(filename) or vim.loop.cwd()
+      end,
+      single_file_support = false,
       settings = {
         -- https://github.com/redhat-developer/vscode-redhat-telemetry#how-to-disable-telemetry-reporting
         redhat = { telemetry = { enabled = false } },
@@ -34,14 +38,6 @@ M.setup = function(conf)
           -- otherwise it uses the schema for ansible defaults
           if result.uri:match('defaults[_%w]*.yaml') then
             return false
-          end
-
-          -- only filter diagnostics for KPOps files
-          if
-            not result.uri:match('pipeline[_%w]*.yaml')
-            and not result.uri:match('config.yaml')
-          then
-            return true
           end
 
           -- disable diagnostics for missing property

@@ -1,4 +1,4 @@
-*kpops.txt*            For NVIM v0.8.0            Last change: 2023 October 31
+*kpops.txt*            For NVIM v0.8.0           Last change: 2023 November 02
 
 ==============================================================================
 Table of Contents                                    *kpops-table-of-contents*

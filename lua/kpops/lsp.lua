@@ -11,7 +11,8 @@ end
 
 local function prepare(cwd)
   local schema_pipeline = kpops.schema('pipeline')
-  utils.write_file(cwd .. '/pipeline.json', schema_pipeline)
+  local path = lspconfig.util.path.join(cwd, 'pipeline.json')
+  utils.write_file(path, schema_pipeline)
 end
 
 M.setup = function(conf)

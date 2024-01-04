@@ -6,13 +6,19 @@ local configs = require('lspconfig.configs')
 local M = {}
 
 local function is_kpops_file(filename)
-  return filename:match('pipeline[_%w]*.yaml') or filename:match('config[_%w]*.yaml')
+  return filename:match('pipeline[_%w]*.yaml')
+    or filename:match('defaults[_%w]*.yaml')
+    or filename:match('config[_%w]*.yaml')
 end
 
 local function prepare(cwd)
   local schema_pipeline = kpops.schema('pipeline')
-  local path = lspconfig.util.path.join(cwd, 'pipeline.json')
-  utils.write_file(path, schema_pipeline)
+  local schema_pipeline_path = lspconfig.util.path.join(cwd, 'pipeline.json')
+  utils.write_file(schema_pipeline_path, schema_pipeline)
+
+  local schema_defaults = kpops.schema('defaults')
+  local schema_defaults_path = lspconfig.util.path.join(cwd, 'defaults.json')
+  utils.write_file(schema_defaults_path, schema_defaults)
 end
 
 M.setup = function(conf)
@@ -42,7 +48,11 @@ M.setup = function(conf)
               'pipeline.yaml',
               'pipeline_*.yaml',
             },
-            ['https://github.com/bakdata/kpops/raw/main/docs/docs/schema/config.json'] =  {
+            ['defaults.json'] = {
+              'defaults.yaml',
+              'defaults_*.yaml',
+            },
+            ['https://github.com/bakdata/kpops/raw/main/docs/docs/schema/config.json'] = {
               'config.yaml',
               'config_*.yaml',
             },
@@ -52,12 +62,6 @@ M.setup = function(conf)
       handlers = {
         ['textDocument/publishDiagnostics'] = function(err, result, ctx, config)
           result.diagnostics = vim.tbl_filter(function(diagnostic)
-            -- HACK: disable diagnostics for KPOps defaults (until a schema exists for it)
-            -- otherwise it uses the schema for ansible defaults
-            if result.uri:match('defaults[_%w]*.yaml') then
-              return false
-            end
-
             -- disable diagnostics for missing property
             -- these could be defined in the defaults (for pipeline.yaml)
             -- or as environment variables (for config.yaml)

@@ -6,7 +6,7 @@ local configs = require('lspconfig.configs')
 local M = {}
 
 local function is_kpops_file(filename)
-  return filename:match('pipeline[_%w]*.yaml') or filename:match('config.yaml')
+  return filename:match('pipeline[_%w]*.yaml') or filename:match('config[_%w]*.yaml')
 end
 
 local function prepare(cwd)
@@ -42,7 +42,10 @@ M.setup = function(conf)
               'pipeline.yaml',
               'pipeline_*.yaml',
             },
-            ['https://github.com/bakdata/kpops/raw/main/docs/docs/schema/config.json'] = 'config.yaml',
+            ['https://github.com/bakdata/kpops/raw/main/docs/docs/schema/config.json'] =  {
+              'config.yaml',
+              'config_*.yaml',
+            },
           },
         },
       },

@@ -6,9 +6,13 @@ local configs = require('lspconfig.configs')
 local M = {}
 
 local function is_kpops_file(filename)
-  return filename:match('pipeline[_%w]*.yaml')
-    or filename:match('defaults[_%w]*.yaml')
-    or filename:match('config[_%w]*.yaml')
+  local basename = vim.fs.basename(filename)
+  return basename
+    and (
+      basename:match('^pipeline[_%w]*.yaml$')
+      or basename:match('^defaults[_%w]*.yaml$')
+      or basename:match('^config[_%w]*.yaml$')
+    )
 end
 
 local function prepare(cwd)

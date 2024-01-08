@@ -13,12 +13,16 @@ end
 
 local function prepare(cwd)
   local schema_pipeline = kpops.schema('pipeline')
-  local schema_pipeline_path = lspconfig.util.path.join(cwd, 'pipeline.json')
-  utils.write_file(schema_pipeline_path, schema_pipeline)
+  if schema_pipeline ~= nil then
+    local schema_pipeline_path = lspconfig.util.path.join(cwd, 'pipeline.json')
+    utils.write_file(schema_pipeline_path, schema_pipeline)
+  end
 
   local schema_defaults = kpops.schema('defaults')
-  local schema_defaults_path = lspconfig.util.path.join(cwd, 'defaults.json')
-  utils.write_file(schema_defaults_path, schema_defaults)
+  if schema_defaults ~= nil then
+    local schema_defaults_path = lspconfig.util.path.join(cwd, 'defaults.json')
+    utils.write_file(schema_defaults_path, schema_defaults)
+  end
 end
 
 M.setup = function(conf)

@@ -17,6 +17,7 @@ end
 
 local function prepare(cwd)
   local kpops_version = kpops.version()
+  local major, minor, patch = unpack(kpops_version)
 
   local schema_pipeline = kpops.schema('pipeline')
   if schema_pipeline ~= nil then
@@ -30,7 +31,7 @@ local function prepare(cwd)
     utils.write_file(schema_config_path, schema_config)
   end
 
-  if kpops_version[1] >= 3 then
+  if major >= 3 then
     local schema_defaults = kpops.schema('defaults')
     if schema_defaults ~= nil then
       local schema_defaults_path = lspconfig.util.path.join(cwd, 'defaults.json')

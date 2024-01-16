@@ -16,16 +16,26 @@ local function is_kpops_file(filename)
 end
 
 local function prepare(cwd)
+  local kpops_version = kpops.version()
+
   local schema_pipeline = kpops.schema('pipeline')
   if schema_pipeline ~= nil then
     local schema_pipeline_path = lspconfig.util.path.join(cwd, 'pipeline.json')
     utils.write_file(schema_pipeline_path, schema_pipeline)
   end
 
-  local schema_defaults = kpops.schema('defaults')
-  if schema_defaults ~= nil then
-    local schema_defaults_path = lspconfig.util.path.join(cwd, 'defaults.json')
-    utils.write_file(schema_defaults_path, schema_defaults)
+  local schema_config = kpops.schema('config')
+  if schema_config ~= nil then
+    local schema_config_path = lspconfig.util.path.join(cwd, 'config.json')
+    utils.write_file(schema_config_path, schema_config)
+  end
+
+  if kpops_version[1] >= 3 then
+    local schema_defaults = kpops.schema('defaults')
+    if schema_defaults ~= nil then
+      local schema_defaults_path = lspconfig.util.path.join(cwd, 'defaults.json')
+      utils.write_file(schema_defaults_path, schema_defaults)
+    end
   end
 end
 
@@ -60,7 +70,7 @@ M.setup = function(conf)
               'defaults.yaml',
               'defaults_*.yaml',
             },
-            ['https://github.com/bakdata/kpops/raw/main/docs/docs/schema/config.json'] = {
+            ['config.json'] = {
               'config.yaml',
               'config_*.yaml',
             },

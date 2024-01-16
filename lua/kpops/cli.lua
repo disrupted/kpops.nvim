@@ -12,4 +12,15 @@ M.schema = function(scope)
   return result.stdout
 end
 
+M.version = function()
+  local result = vim.system({ 'kpops', '--version' }):wait()
+  local version = result.stdout:sub(7) -- remove KPOps prefix
+
+  local semver = {}
+  for i in version:gmatch('([^.]+)') do
+    table.insert(semver, tonumber(i))
+  end
+  return semver
+end
+
 return M

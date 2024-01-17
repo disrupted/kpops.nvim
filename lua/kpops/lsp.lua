@@ -5,38 +5,39 @@ local configs = require('lspconfig.configs')
 
 local M = {}
 
-local function is_kpops_file(filename)
-  local basename = vim.fs.basename(filename)
-  return basename
-    and (
-      basename:match('^pipeline[_%w]*.yaml$')
-      or basename:match('^defaults[_%w]*.yaml$')
-      or basename:match('^config[_%w]*.yaml$')
-    )
+local function match_kpops_file(filename)
+  local basename = assert(vim.fs.basename(filename))
+
+  if basename:match('^pipeline[_%w]*.yaml$') then
+    return 'pipeline'
+  end
+  if basename:match('^defaults[_%w]*.yaml$') then
+    return 'defaults'
+  end
+  if basename:match('^config[_%w]*.yaml$') then
+    return 'config'
+  end
+  return nil
 end
 
-local function prepare(cwd)
-  local kpops_version = kpops.version()
-  local major, minor, patch = unpack(kpops_version)
+local function is_kpops_file(filename)
+  return match_kpops_file(filename) ~= nil
+end
 
-  local schema_pipeline = kpops.schema('pipeline')
-  if schema_pipeline ~= nil then
-    local schema_pipeline_path = lspconfig.util.path.join(cwd, 'pipeline.json')
-    utils.write_file(schema_pipeline_path, schema_pipeline)
-  end
-
-  local schema_config = kpops.schema('config')
-  if schema_config ~= nil then
-    local schema_config_path = lspconfig.util.path.join(cwd, 'config.json')
-    utils.write_file(schema_config_path, schema_config)
-  end
-
-  if major >= 3 then
-    local schema_defaults = kpops.schema('defaults')
-    if schema_defaults ~= nil then
-      local schema_defaults_path = lspconfig.util.path.join(cwd, 'defaults.json')
-      utils.write_file(schema_defaults_path, schema_defaults)
+local function generate_schema(scope)
+  if scope == 'defaults' then
+    local kpops_version = kpops.version()
+    local major, minor, patch = unpack(kpops_version)
+    if major < 3 then
+      return
     end
+  end
+
+  local schema = kpops.schema(scope)
+  if schema ~= nil then
+    local basename = string.format('kpops_schema_%s.json', scope)
+    local schema_path = utils.write_tmpfile(schema, basename)
+    return schema_path
   end
 end
 
@@ -52,9 +53,19 @@ M.setup = function(conf)
         end
 
         local cwd = lspconfig.util.find_git_ancestor(filename) or vim.loop.cwd()
-        prepare(cwd)
-
         return cwd
+      end,
+      on_attach = function(client, bufnr)
+        local filename = vim.api.nvim_buf_get_name(bufnr)
+        local scope = assert(match_kpops_file(filename))
+        local schema_path = assert(generate_schema(scope))
+        client.config.settings.yaml.schemas[schema_path] = {
+          scope .. '.yaml',
+          scope .. '_*.yaml',
+        }
+        vim.notify('reload KPOps schemas')
+        vim.notify(vim.inspect(client.config.settings.yaml.schemas), vim.log.levels.DEBUG)
+        client.notify('workspace/didChangeConfiguration', { settings = client.config.settings })
       end,
       single_file_support = false,
       settings = {
@@ -63,18 +74,18 @@ M.setup = function(conf)
         yaml = {
           editor = { formatOnType = true },
           schemas = {
-            ['pipeline.json'] = {
-              'pipeline.yaml',
-              'pipeline_*.yaml',
-            },
-            ['defaults.json'] = {
-              'defaults.yaml',
-              'defaults_*.yaml',
-            },
-            ['config.json'] = {
-              'config.yaml',
-              'config_*.yaml',
-            },
+            --   ['pipeline.json'] = {
+            --     'pipeline.yaml',
+            --     'pipeline_*.yaml',
+            --   },
+            --   ['defaults.json'] = {
+            --     'defaults.yaml',
+            --     'defaults_*.yaml',
+            --   },
+            --   ['config.json'] = {
+            --     'config.yaml',
+            --     'config_*.yaml',
+            --   },
           },
         },
       },

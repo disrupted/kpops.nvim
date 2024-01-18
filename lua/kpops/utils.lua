@@ -6,7 +6,7 @@ M.write_file = function(path, string)
   assert(vim.loop.fs_close(fd))
 end
 
-M.write_tmpfile = function(string, basename)
+M.write_tmpfile = function(basename, string)
   local path = os.tmpname()
   if basename ~= nil then
     local tmpdir = vim.fs.dirname(path)

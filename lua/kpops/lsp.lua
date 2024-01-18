@@ -36,7 +36,7 @@ local function generate_schema(scope)
   local schema = kpops.schema(scope)
   if schema ~= nil then
     local basename = string.format('kpops_schema_%s.json', scope)
-    local schema_path = utils.write_tmpfile(schema, basename)
+    local schema_path = utils.write_tmpfile(basename, schema)
     return schema_path
   end
 end

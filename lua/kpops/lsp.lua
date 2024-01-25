@@ -20,39 +20,28 @@ M.setup = function(conf)
         return cwd
       end,
       on_attach = function(client, bufnr)
-        local filename = vim.api.nvim_buf_get_name(bufnr)
-        schema.match_kpops_file(filename)
-        local scope = assert(schema.match_kpops_file(filename))
-        local schema_path = assert(schema.generate(scope))
-        client.config.settings.yaml.schemas[schema_path] = {
-          scope .. '.yaml',
-          scope .. '_*.yaml',
-        }
-        vim.notify('reload KPOps schemas')
-        vim.notify(vim.inspect(client.config.settings.yaml.schemas), vim.log.levels.DEBUG)
-        client.notify('workspace/didChangeConfiguration', { settings = client.config.settings })
+        local config = client.config
+        ---@cast config DefaultConfig
+
+        if config.settings.kpops.generate_schema then
+          local filename = vim.api.nvim_buf_get_name(bufnr)
+          schema.match_kpops_file(filename)
+          local scope = assert(schema.match_kpops_file(filename))
+          local schema_path = assert(schema.generate(scope))
+          client.config.settings.yaml.schemas[schema_path] = {
+            scope .. '.yaml',
+            scope .. '_*.yaml',
+          }
+          vim.notify('reload KPOps schemas')
+          vim.notify(vim.inspect(client.config.settings.yaml.schemas), vim.log.levels.DEBUG)
+          client.notify('workspace/didChangeConfiguration', { settings = client.config.settings })
+        end
       end,
       single_file_support = false,
       settings = {
         -- https://github.com/redhat-developer/vscode-redhat-telemetry#how-to-disable-telemetry-reporting
         redhat = { telemetry = { enabled = false } },
-        yaml = {
-          editor = { formatOnType = true },
-          schemas = {
-            --   ['pipeline.json'] = {
-            --     'pipeline.yaml',
-            --     'pipeline_*.yaml',
-            --   },
-            --   ['defaults.json'] = {
-            --     'defaults.yaml',
-            --     'defaults_*.yaml',
-            --   },
-            --   ['config.json'] = {
-            --     'config.yaml',
-            --     'config_*.yaml',
-            --   },
-          },
-        },
+        yaml = {},
       },
       handlers = {
         ['textDocument/publishDiagnostics'] = function(err, result, ctx, config)

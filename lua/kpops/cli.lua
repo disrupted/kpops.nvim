@@ -1,7 +1,18 @@
 local M = {}
 
+local KPOPS = 'KPOps'
+
+---@enum schema_scope
+M.SCHEMA_SCOPE = {
+  pipeline = 'pipeline',
+  defaults = 'defaults',
+  config = 'config',
+}
+
+---@param scope schema_scope
+---@return string | nil
 M.schema = function(scope)
-  local result = vim.system({ 'kpops', 'schema', scope }):wait()
+  local result = vim.system({ KPOPS, 'schema', scope }):wait()
   if result.code ~= 0 then
     vim.notify(
       string.format('KPOps error generating %s schema: %s', scope, result.stderr),
@@ -12,15 +23,23 @@ M.schema = function(scope)
   return result.stdout
 end
 
-M.version = function()
-  local result = vim.system({ 'kpops', '--version' }):wait()
-  local version = result.stdout:sub(7) -- remove KPOps prefix
+---@alias semver_scope
+---| 'major'
+---| 'minor'
+---| 'patch'
 
-  local semver = {}
+---@return { [semver_scope]: integer }
+M.version = function()
+  local result = vim.system({ KPOPS, '--version' }):wait()
+  local version = result.stdout:sub(#KPOPS) -- remove KPOps prefix
+
+  ---@type integer[]
+  local major_minor_patch = {}
   for i in version:gmatch('([^.]+)') do
-    table.insert(semver, tonumber(i))
+    table.insert(major_minor_patch, tonumber(i))
   end
-  return semver
+  local major, minor, patch = unpack(major_minor_patch)
+  return { major = major, minor = minor, patch = patch }
 end
 
 return M

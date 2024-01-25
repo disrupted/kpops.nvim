@@ -5,32 +5,33 @@ local configs = require('lspconfig.configs')
 
 local M = {}
 
+---@param filename string
+---@return schema_scope | nil
 local function match_kpops_file(filename)
   local basename = assert(vim.fs.basename(filename))
 
   if basename:match('^pipeline[_%w]*.yaml$') then
-    return 'pipeline'
+    return kpops.SCHEMA_SCOPE.pipeline
   end
   if basename:match('^defaults[_%w]*.yaml$') then
-    return 'defaults'
+    return kpops.SCHEMA_SCOPE.defaults
   end
   if basename:match('^config[_%w]*.yaml$') then
-    return 'config'
+    return kpops.SCHEMA_SCOPE.config
   end
-  return nil
 end
 
+---@param filename string
+---@return boolean
 local function is_kpops_file(filename)
   return match_kpops_file(filename) ~= nil
 end
 
+---@param scope schema_scope
+---@return string | nil
 local function generate_schema(scope)
-  if scope == 'defaults' then
-    local kpops_version = kpops.version()
-    local major, minor, patch = unpack(kpops_version)
-    if major < 3 then
-      return
-    end
+  if scope == kpops.SCHEMA_SCOPE.defaults and kpops.version().major < 3 then
+    return
   end
 
   local schema = kpops.schema(scope)
@@ -41,6 +42,7 @@ local function generate_schema(scope)
   end
 end
 
+---@param conf table<string, any>
 M.setup = function(conf)
   configs.kpops = {
     -- https://github.com/redhat-developer/yaml-language-server

@@ -16,8 +16,7 @@ end
 ---@param ... string
 M.kpops = function(command, ...)
   if not vim.list_contains(commands, command) then
-    vim.notify(string.format('KPOps command "%s" doesn\'t exist', command), vim.log.levels.ERROR)
-    return
+    return kpops.arbitrary(command, ...)
   end
   return M[command]()
 end

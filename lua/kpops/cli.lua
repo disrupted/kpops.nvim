@@ -54,4 +54,15 @@ M.version = function()
   }
 end
 
+---@param ... string
+---@return vim.SystemCompleted
+M.arbitrary = function(...)
+  local result = vim.system({ KPOPS, ... }):wait()
+  if result.code ~= 0 then
+    vim.notify(string.format('KPOps error: %s', result.stderr), vim.log.levels.ERROR)
+  end
+  vim.notify(result.stdout, vim.log.levels.INFO)
+  return result
+end
+
 return M

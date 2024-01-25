@@ -42,7 +42,7 @@ M.schema = function(scope)
 end
 
 ---@alias semver_scope 'major' | 'minor' | 'patch'
----@return { [semver_scope]: number }
+---@return table<semver_scope, number>
 M.version = function()
   local result = vim.system({ KPOPS, '--version' }, { text = true }):wait()
   local version = result.stdout:sub(#KPOPS + 1) -- remove KPOps prefix

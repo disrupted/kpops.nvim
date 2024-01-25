@@ -1,5 +1,5 @@
 local lsp = require('kpops.lsp')
-local commands=require('kpops.commands')
+local commands = require('kpops.commands')
 
 local M = {}
 
@@ -32,7 +32,7 @@ local conf = {
 
 -- -@param opts table<string, any>
 M.setup = function(opts)
-    commands.setup()
+  commands.setup()
   conf = vim.tbl_deep_extend('force', conf, opts or {})
   lsp.setup(conf)
 end

@@ -40,7 +40,7 @@ M.kpops_command_complete = function(arg_lead, cmd)
 
   if #parts == 1 then
     return commands
-  elseif #parts == 2 and not vim.list_contains(commands, parts[2]) then
+  elseif #parts == 2 and not commands[parts[2]] then
     return get_options(commands)
   end
 end

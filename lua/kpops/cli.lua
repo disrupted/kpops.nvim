@@ -31,7 +31,7 @@ end
 ---@return { [semver_scope]: integer }
 M.version = function()
   local result = vim.system({ KPOPS, '--version' }):wait()
-  local version = result.stdout:sub(#KPOPS) -- remove KPOps prefix
+  local version = result.stdout:sub(#KPOPS + 1) -- remove KPOps prefix
 
   ---@type integer[]
   local major_minor_patch = {}

@@ -46,14 +46,12 @@ end
 M.version = function()
   local result = vim.system({ KPOPS, '--version' }):wait()
   local version = result.stdout:sub(#KPOPS + 1) -- remove KPOps prefix
-
-  ---@type number[]
-  local major_minor_patch = {}
-  for part in version:gmatch('([^.]+)') do
-    table.insert(major_minor_patch, tonumber(part))
-  end
-  local major, minor, patch = unpack(major_minor_patch)
-  return { major = major, minor = minor, patch = patch }
+  local major, minor, patch = unpack(vim.split(version, '.', { plain = true }))
+  return {
+    major = tonumber(assert(major)),
+    minor = tonumber(assert(minor)),
+    patch = tonumber(assert(patch)),
+  }
 end
 
 return M

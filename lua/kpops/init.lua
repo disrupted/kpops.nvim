@@ -7,6 +7,7 @@ local conf = {
   settings = {
     yaml = {
       editor = { formatOnType = true },
+      ---@type table<string, string | string[]>
       schemas = {
         ['https://bakdata.github.io/kpops/3.0/schema/pipeline.json'] = {
           'pipeline.yaml',

@@ -32,10 +32,21 @@ M.setup = function(conf)
           schema.match_kpops_file(filename)
           local scope = assert(schema.match_kpops_file(filename))
           local schema_path = assert(schema.generate(scope))
-          client.config.settings.yaml.schemas[schema_path] = {
+          local schemas = config.settings.yaml.schemas
+
+          -- remove previously registered schema for scope
+          for _, registered_schema in ipairs(vim.tbl_keys(schemas)) do
+            if registered_schema:match(scope) then
+              schemas[registered_schema] = nil
+            end
+          end
+
+          -- register new schema
+          schemas[schema_path] = {
             scope .. '.yaml',
             scope .. '_*.yaml',
           }
+
           vim.notify('reload KPOps schemas')
           vim.notify(vim.inspect(client.config.settings.yaml.schemas), vim.log.levels.DEBUG)
           client.notify('workspace/didChangeConfiguration', { settings = client.config.settings })

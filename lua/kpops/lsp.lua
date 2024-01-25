@@ -1,6 +1,7 @@
+local kpops = require('kpops.cli')
+local schema = require('kpops.schema')
 local lspconfig = require('lspconfig')
 local configs = require('lspconfig.configs')
-local schema = require('kpops.schema')
 
 local M = {}
 
@@ -12,6 +13,9 @@ M.setup = function(conf)
       cmd = { 'yaml-language-server', '--stdio' },
       filetypes = { 'yaml' },
       root_dir = function(filename)
+        if not kpops.is_installed() then
+          return nil
+        end
         if not schema.is_kpops_file(filename) then
           return nil -- not a KPOps project, abort LSP startup
         end

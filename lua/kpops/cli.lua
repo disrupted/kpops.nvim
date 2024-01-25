@@ -2,6 +2,11 @@ local KPOPS = require('kpops.consts').KPOPS
 
 local M = {}
 
+---@return boolean
+M.is_installed = function()
+  return vim.fn.executable(KPOPS) == 1
+end
+
 ---@param scope schema_scope
 ---@return string | nil
 M.schema = function(scope)

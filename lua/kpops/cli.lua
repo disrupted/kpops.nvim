@@ -7,6 +7,26 @@ M.is_installed = function()
   return vim.fn.executable(KPOPS) == 1
 end
 
+---@param pipeline string
+---@alias output_format 'yaml' | 'json'
+---@param output? output_format
+---@return string | nil
+M.generate = function(pipeline, output)
+  local cmd = { KPOPS, 'generate', pipeline }
+  if output ~= nil then
+    cmd = vim.list_extend(cmd, { '--output', output })
+  end
+  local result = vim.system(cmd):wait()
+  if result.code ~= 0 then
+    vim.notify(
+      string.format('KPOps error generating pipeline %s: %s', pipeline, result.stderr),
+      vim.log.levels.ERROR
+    )
+    return
+  end
+  return result.stdout
+end
+
 ---@param scope schema_scope
 ---@return string | nil
 M.schema = function(scope)

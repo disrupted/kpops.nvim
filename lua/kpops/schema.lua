@@ -45,4 +45,6 @@ M.generate = function(scope)
   end
 end
 
+M.SCOPE = SCOPE
+
 return M

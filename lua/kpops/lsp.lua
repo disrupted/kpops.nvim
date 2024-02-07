@@ -31,7 +31,10 @@ M.setup = function(conf)
           local filename = vim.api.nvim_buf_get_name(bufnr)
           schema.match_kpops_file(filename)
           local scope = assert(schema.match_kpops_file(filename))
-          local schema_path = assert(schema.generate(scope))
+          local schema_path = schema.generate(scope)
+          if not schema_path then
+            return
+          end
           local schemas = config.settings.yaml.schemas
 
           -- remove previously registered schema for scope

@@ -41,17 +41,17 @@ M.schema = function(scope)
   return result.stdout
 end
 
----@alias semver_scope 'major' | 'minor' | 'patch'
----@return table<semver_scope, number>
+---@return Version
 M.version = function()
   local result = vim.system({ KPOPS, '--version' }, { text = true }):wait()
-  local version = result.stdout:sub(#KPOPS + 1) -- remove KPOps prefix
-  local major, minor, patch = unpack(vim.split(version, '.', { plain = true }))
-  return {
-    major = tonumber(assert(major)),
-    minor = tonumber(assert(minor)),
-    patch = tonumber(assert(patch)),
-  }
+  return assert(vim.version.parse(result.stdout))
+  -- local version = result.stdout:sub(#KPOPS + 1) -- remove KPOps prefix
+  -- local major, minor, patch = unpack(vim.split(version, '.', { plain = true }))
+  -- return {
+  --   major = tonumber(assert(major)),
+  --   minor = tonumber(assert(minor)),
+  --   patch = tonumber(assert(patch)),
+  -- }
 end
 
 ---@async

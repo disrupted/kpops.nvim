@@ -32,8 +32,8 @@ end
 ---@param scope schema_scope
 ---@return string | nil
 M.generate = function(scope)
-  if scope == SCOPE.defaults and kpops.version().major < 3 then
-    -- KPOps v3+ is required for defaults schema
+  if scope == SCOPE.defaults and vim.version.lt(kpops.version(), { 3 }) then
+    vim.notify('KPOps v3+ is required for defaults schema', vim.log.levels.DEBUG)
     return
   end
 

@@ -11,15 +11,8 @@ M.setup = function(conf)
     -- https://github.com/redhat-developer/yaml-language-server
     default_config = {
       cmd = { 'yaml-language-server', '--stdio' },
-      filetypes = { 'yaml' },
+      filetypes = { 'yaml.kpops' },
       root_dir = function(filename)
-        if not kpops.is_installed() then
-          return nil
-        end
-        if not schema.is_kpops_file(filename) then
-          return nil -- not a KPOps project, abort LSP startup
-        end
-
         local cwd = lspconfig.util.find_git_ancestor(filename) or vim.loop.cwd()
         return cwd
       end,

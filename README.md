@@ -11,7 +11,7 @@ example using [Lazy](https://github.com/folke/lazy.nvim) plugin manager
 ```lua
 {
     'disrupted/kpops.nvim',
-    ft = 'yaml',
+    ft = 'yaml.kpops',
     opts = {
         settings = {
             kpops = {
@@ -19,7 +19,6 @@ example using [Lazy](https://github.com/folke/lazy.nvim) plugin manager
             },
         },
     },
-    config = true,
     dependencies = { 'neovim/nvim-lspconfig' }
 }
 ```

@@ -1,4 +1,4 @@
-*kpops.txt*            For NVIM v0.8.0           Last change: 2024 February 28
+*kpops.txt*             For NVIM v0.8.0             Last change: 2024 March 28
 
 ==============================================================================
 Table of Contents                                    *kpops-table-of-contents*
@@ -22,7 +22,7 @@ example using Lazy <https://github.com/folke/lazy.nvim> plugin manager
 >lua
     {
         'disrupted/kpops.nvim',
-        ft = 'yaml',
+        ft = 'yaml.kpops',
         opts = {
             settings = {
                 kpops = {
@@ -30,7 +30,6 @@ example using Lazy <https://github.com/folke/lazy.nvim> plugin manager
                 },
             },
         },
-        config = true,
         dependencies = { 'neovim/nvim-lspconfig' }
     }
 <

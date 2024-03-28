@@ -4,8 +4,8 @@ if not kpops.is_installed() then
 end
 vim.filetype.add({
   pattern = {
-    ['pipeline?.*%.yaml'] = 'yaml.kpops',
+    ['pipeline_?.*%.yaml'] = 'yaml.kpops',
     ['defaults_?.*%.yaml'] = 'yaml.kpops',
-    ['config?.*%.yaml'] = 'yaml.kpops',
+    ['config_?.*%.yaml'] = 'yaml.kpops',
   },
 })

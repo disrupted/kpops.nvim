@@ -1,7 +1,6 @@
 local kpops = require('kpops.cli')
 local lsp = require('kpops.lsp')
 local commands = require('kpops.commands')
-local config = require('kpops.config')
 
 local M = {}
 
@@ -13,6 +12,7 @@ M.setup = function(opts)
   end
 
   commands.setup()
+  local config = require('kpops.config')
   config = vim.tbl_deep_extend('force', config, opts or {})
   lsp.setup(config)
 end

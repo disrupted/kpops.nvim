@@ -55,7 +55,7 @@ M.generate = function()
 
   -- create buffer and open floating window
   local buf = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_set_option_value('filetype', 'yaml', { buf = buf })
+  vim.api.nvim_set_option_value('filetype', 'yaml.kpops', { buf = buf })
   vim.api.nvim_buf_set_name(buf, 'pipeline_generated.yaml')
   vim.api.nvim_buf_set_lines(buf, 0, 0, false, vim.split(pipeline, '\n'))
   local win = vim.api.nvim_open_win(

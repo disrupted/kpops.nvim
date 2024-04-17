@@ -20,7 +20,7 @@ M.setup = function(conf)
         local config = client.config
         ---@cast config DefaultConfig
 
-        if config.settings.kpops.generate_schema then
+        if config.kpops.generate_schema then
           local filename = vim.api.nvim_buf_get_name(bufnr)
           schema.match_kpops_file(filename)
           local scope = assert(schema.match_kpops_file(filename))
@@ -28,7 +28,7 @@ M.setup = function(conf)
           if not schema_path then
             return
           end
-          local schemas = config.settings.yaml.schemas
+          local schemas = config.yamlls.settings.yaml.schemas
 
           -- remove previously registered schema for scope
           for _, registered_schema in ipairs(vim.tbl_keys(schemas)) do
@@ -72,7 +72,7 @@ M.setup = function(conf)
       },
     },
   }
-  lspconfig.kpops.setup(conf)
+  lspconfig.kpops.setup(conf.yamlls)
 end
 
 return M

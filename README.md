@@ -12,14 +12,18 @@ example using [Lazy](https://github.com/folke/lazy.nvim) plugin manager
 {
     'disrupted/kpops.nvim',
     ft = 'yaml.kpops',
-    opts = {
-        settings = {
-            kpops = {
-                generate_schema = true,
-            },
-        },
-    },
+    opts = {},
     dependencies = { 'neovim/nvim-lspconfig' }
+}
+```
+
+Default Configuration (passed as `opts`)
+
+```lua
+{
+    kpops = {
+        generate_schema = true,
+    }
 }
 ```
 

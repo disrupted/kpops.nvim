@@ -13,7 +13,7 @@ M.setup = function(conf)
       cmd = { 'yaml-language-server', '--stdio' },
       filetypes = { 'yaml.kpops' },
       root_dir = function(filename)
-        local cwd = lspconfig.util.find_git_ancestor(filename) or vim.loop.cwd()
+        local cwd = lspconfig.util.find_git_ancestor(filename) or vim.uv.cwd()
         return cwd
       end,
       on_attach = function(client, bufnr)

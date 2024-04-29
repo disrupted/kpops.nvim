@@ -1,13 +1,13 @@
 local kpops = require('kpops.cli')
 local schema = require('kpops.schema')
 local lspconfig = require('lspconfig')
-local configs = require('lspconfig.configs')
+local lspconfigs = require('lspconfig.configs')
 
 local M = {}
 
----@param conf table<string, any>
-M.setup = function(conf)
-  configs.kpops = {
+M.setup = function()
+  local Config = require('kpops.config')
+  lspconfigs.kpops = {
     -- https://github.com/redhat-developer/yaml-language-server
     default_config = {
       cmd = { 'yaml-language-server', '--stdio' },
@@ -17,10 +17,7 @@ M.setup = function(conf)
         return cwd
       end,
       on_attach = function(client, bufnr)
-        local config = client.config
-        ---@cast config DefaultConfig
-
-        if config.kpops.generate_schema then
+        if Config.options.kpops.generate_schema then
           local filename = vim.api.nvim_buf_get_name(bufnr)
           schema.match_kpops_file(filename)
           local scope = assert(schema.match_kpops_file(filename))
@@ -28,7 +25,7 @@ M.setup = function(conf)
           if not schema_path then
             return
           end
-          local schemas = config.yamlls.settings.yaml.schemas
+          local schemas = client.config.settings.yaml.schemas
 
           -- remove previously registered schema for scope
           for _, registered_schema in ipairs(vim.tbl_keys(schemas)) do
@@ -72,7 +69,7 @@ M.setup = function(conf)
       },
     },
   }
-  lspconfig.kpops.setup(conf.yamlls)
+  lspconfig.kpops.setup(Config.options.yamlls)
 end
 
 return M

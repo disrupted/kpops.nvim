@@ -2,8 +2,10 @@ local kpops = require('kpops.cli')
 local version = kpops.version()
 local major_minor = string.format('%d.%d', version.major, version.minor)
 
+local M = {}
+
 ---@class DefaultConfig
-local config = {
+M.defaults = {
   yamlls = {
     settings = {
       yaml = {
@@ -30,4 +32,13 @@ local config = {
     generate_schema = true,
   },
 }
-return config
+
+---@type DefaultConfig
+M.options = {}
+
+---@param opts? DefaultConfig
+function M.setup(opts)
+  M.options = vim.tbl_deep_extend('force', M.defaults, opts or {})
+end
+
+return M

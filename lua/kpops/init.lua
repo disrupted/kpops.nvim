@@ -4,7 +4,7 @@ local commands = require('kpops.commands')
 
 local M = {}
 
--- -@param opts table<string, any>
+---@param opts? DefaultConfig
 M.setup = function(opts)
   if not kpops.is_installed() then
     vim.notify('KPOps is not installed', vim.log.levels.WARN)
@@ -12,9 +12,10 @@ M.setup = function(opts)
   end
 
   commands.setup()
-  local config = require('kpops.config')
-  config = vim.tbl_deep_extend('force', config, opts or {})
-  lsp.setup(config)
+  local Config = require('kpops.config')
+  Config.setup(opts)
+  -- config = vim.tbl_deep_extend('force', config, opts or {})
+  lsp.setup()
 end
 
 return M

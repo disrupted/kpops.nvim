@@ -1,5 +1,4 @@
-local kpops = require('kpops.cli')
-if not kpops.is_installed() then
+if not vim.fn.executable('kpops') == 1 then
   return
 end
 vim.filetype.add({

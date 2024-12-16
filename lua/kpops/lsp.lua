@@ -19,7 +19,6 @@ M.setup = function()
       on_attach = function(client, bufnr)
         if Config.options.kpops.generate_schema then
           local filename = vim.api.nvim_buf_get_name(bufnr)
-          schema.match_kpops_file(filename)
           local scope = assert(schema.match_kpops_file(filename))
           local schema_path = schema.generate(scope)
           if not schema_path then

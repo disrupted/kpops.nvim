@@ -16,6 +16,9 @@ M.setup = function(opts)
   Config.setup(opts)
   -- config = vim.tbl_deep_extend('force', config, opts or {})
   lsp.setup()
+
+  -- optional
+  require('kpops.overseer')
 end
 
 return M

@@ -1,23 +1,18 @@
-local kpops = require('kpops.cli')
-local schema = require('kpops.schema')
-local lspconfig = require('lspconfig')
-local lspconfigs = require('lspconfig.configs')
-
 local M = {}
 
 M.setup = function()
   local Config = require('kpops.config')
-  lspconfigs.kpops = {
+  require('lspconfig.configs').kpops = {
     -- https://github.com/redhat-developer/yaml-language-server
     default_config = {
       cmd = { 'yaml-language-server', '--stdio' },
       filetypes = { 'yaml.kpops' },
       root_dir = function(filename)
-        local cwd = lspconfig.util.find_git_ancestor(filename) or vim.uv.cwd()
-        return cwd
+        return vim.fs.root(filename, { '.git' }) or vim.uv.cwd()
       end,
       on_attach = function(client, bufnr)
         if Config.options.kpops.generate_schema then
+          local schema = require('kpops.schema')
           local filename = vim.api.nvim_buf_get_name(bufnr)
           local scope = assert(schema.match_kpops_file(filename))
           local schema_path = schema.generate(scope)
@@ -51,7 +46,7 @@ M.setup = function()
         yaml = {},
       },
       handlers = {
-        ['textDocument/publishDiagnostics'] = function(err, result, ctx, config)
+        ['textDocument/publishDiagnostics'] = function(err, result, ctx)
           result.diagnostics = vim.tbl_filter(function(diagnostic)
             -- disable diagnostics for missing property
             -- these could be defined in the defaults (for pipeline.yaml)
@@ -63,12 +58,12 @@ M.setup = function()
             return true
           end, result.diagnostics)
 
-          vim.lsp.handlers['textDocument/publishDiagnostics'](err, result, ctx, config)
+          vim.lsp.handlers['textDocument/publishDiagnostics'](err, result, ctx)
         end,
       },
     },
   }
-  lspconfig.kpops.setup(Config.options.yamlls)
+  require('lspconfig').kpops.setup(Config.options.yamlls)
 end
 
 return M

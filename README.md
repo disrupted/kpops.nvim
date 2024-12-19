@@ -11,9 +11,12 @@ example using [Lazy](https://github.com/folke/lazy.nvim) plugin manager
 ```lua
 {
     'disrupted/kpops.nvim',
+    cmd = 'KPOps',
     ft = 'yaml.kpops',
-    opts = {},
     dependencies = { 'neovim/nvim-lspconfig' }
+    ---@module 'kpops.config'
+    ---@type kpops.Opts
+    opts = {},
 }
 ```
 

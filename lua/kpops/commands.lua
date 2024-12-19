@@ -1,5 +1,7 @@
 local kpops = require('kpops.cli')
 local schema = require('kpops.schema')
+local utils = require('kpops.utils')
+local KPOPS = require('kpops.consts').KPOPS
 
 local M = {}
 
@@ -7,7 +9,7 @@ local M = {}
 local commands = { 'generate', 'version' }
 
 M.setup = function()
-  vim.api.nvim_create_user_command('KPOps', function(opts)
+  vim.api.nvim_create_user_command(KPOPS, function(opts)
     require('kpops.commands').kpops(unpack(opts.fargs))
   end, { complete = require('kpops.commands').kpops_command_complete, nargs = '*' })
 end
@@ -48,7 +50,7 @@ M.generate = function()
   local fname = vim.api.nvim_buf_get_name(0)
   local scope = assert(schema.match_kpops_file(fname))
   if scope ~= schema.SCOPE.pipeline then
-    vim.notify('file is not a KPOps pipeline', vim.log.levels.ERROR)
+    utils.error(string.format('file is not a %s pipeline', KPOPS))
   end
 
   local pipeline = assert(kpops.generate(fname))
@@ -71,16 +73,7 @@ end
 
 M.version = function()
   local version = kpops.version()
-  vim.notify(
-    string.format(
-      '%s %d.%d.%d',
-      require('kpops.consts').KPOPS,
-      version.major,
-      version.minor,
-      version.patch
-    ),
-    vim.log.levels.INFO
-  )
+  utils.notify(string.format('%s %d.%d.%d', KPOPS, version.major, version.minor, version.patch))
 end
 
 return M

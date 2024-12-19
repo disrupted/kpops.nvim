@@ -1,15 +1,16 @@
+local KPOPS = require('kpops.consts').KPOPS
 local has_overseer, overseer = pcall(require, 'overseer')
 if not has_overseer then
   return
 end
 
 overseer.register_template({
-  name = 'KPOps generate',
+  name = ('%s generate'):format(KPOPS),
   tags = { overseer.TAG.BUILD },
   builder = function()
     local file = vim.fn.expand('%:p')
     return {
-      cmd = { 'kpops', 'generate' },
+      cmd = { KPOPS:lower(), 'generate' },
       args = { file },
       components = {
         {

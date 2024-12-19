@@ -1,3 +1,6 @@
+local KPOPS = require('kpops.consts').KPOPS
+
+---@class KpopsUtils
 local M = {}
 
 ---@param path string
@@ -21,6 +24,22 @@ M.write_tmpfile = function(basename, content)
   assert(vim.uv.fs_write(fd, content, 0))
   assert(vim.uv.fs_close(fd))
   return path
+end
+
+---@param msg string
+---@param level integer?
+M.notify = function(msg, level)
+  vim.notify(msg, level or vim.log.levels.INFO, { title = KPOPS })
+end
+
+---@param msg string
+M.warn = function(msg)
+  M.notify(msg, vim.log.levels.WARN)
+end
+
+---@param msg string
+M.error = function(msg)
+  M.notify(msg, vim.log.levels.ERROR)
 end
 
 return M

@@ -1,7 +1,8 @@
+local utils = require('kpops.utils')
 local M = {}
 
 M.setup = function()
-  local Config = require('kpops.config')
+  local config = require('kpops.config').config
   require('lspconfig.configs').kpops = {
     -- https://github.com/redhat-developer/yaml-language-server
     default_config = {
@@ -11,7 +12,7 @@ M.setup = function()
         return vim.fs.root(filename, { '.git' }) or vim.uv.cwd()
       end,
       on_attach = function(client, bufnr)
-        if Config.options.kpops.generate_schema then
+        if config.kpops.generate_schema then
           local schema = require('kpops.schema')
           local filename = vim.api.nvim_buf_get_name(bufnr)
           local scope = assert(schema.match_kpops_file(filename))
@@ -34,8 +35,8 @@ M.setup = function()
             scope .. '_*.yaml',
           }
 
-          vim.notify('reload KPOps schemas')
-          vim.notify(vim.inspect(client.config.settings.yaml.schemas), vim.log.levels.DEBUG)
+          utils.notify('reload schemas')
+          utils.notify(vim.inspect(client.config.settings.yaml.schemas), vim.log.levels.DEBUG)
           client.notify('workspace/didChangeConfiguration', { settings = client.config.settings })
         end
       end,
@@ -63,7 +64,7 @@ M.setup = function()
       },
     },
   }
-  require('lspconfig').kpops.setup(Config.options.yamlls)
+  require('lspconfig').kpops.setup(config.yamlls)
 end
 
 return M

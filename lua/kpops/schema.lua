@@ -11,7 +11,7 @@ local SCOPE = {
 }
 
 ---@param filename string
----@return schema_scope | nil
+---@return schema_scope?
 M.match_kpops_file = function(filename)
   local basename = assert(vim.fs.basename(filename))
 
@@ -30,10 +30,10 @@ M.is_kpops_file = function(filename)
 end
 
 ---@param scope schema_scope
----@return string | nil
+---@return string?
 M.generate = function(scope)
   if scope == SCOPE.defaults and vim.version.lt(kpops.version(), { 3 }) then
-    vim.notify('KPOps v3+ is required for defaults schema', vim.log.levels.DEBUG)
+    utils.warn('Update to v3+ for defaults schema')
     return
   end
 

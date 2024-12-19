@@ -17,6 +17,7 @@ M.setup = function(opts)
   Config.setup(opts)
   lsp.setup()
 
+  require('kpops.treesitter')
   -- optional
   require('kpops.overseer')
 end

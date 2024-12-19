@@ -14,6 +14,7 @@ example using [Lazy](https://github.com/folke/lazy.nvim) plugin manager
     cmd = 'KPOps',
     ft = 'yaml.kpops',
     dependencies = {
+        'nvim-treesitter/nvim-treesitter',
         'neovim/nvim-lspconfig',
         'gregorias/coop.nvim',
     },
@@ -44,3 +45,4 @@ Default Configuration (passed as `opts`)
     > or as environment variables (for config.yaml)
 - automatic schema generation in the background for all KPOps user files (pipeline.yaml, defaults.yaml, config.yaml)
 - CLI integration as Ex commands, e.g. `:KPOps generate`
+- custom TreeSitter parser

@@ -1,5 +1,6 @@
 local utils = require('kpops.utils')
 local kpops = require('kpops.consts').KPOPS:lower()
+local system = require('coop.vim').system
 
 local M = {}
 
@@ -8,16 +9,12 @@ M.is_installed = function()
   return vim.fn.executable(kpops) == 1
 end
 
+---@async
 ---@param pipeline string
----@alias output_format 'yaml' | 'json'
----@param output? output_format
----@return string?
+---@return string? stdout
 M.generate = function(pipeline, output)
   local cmd = { kpops, 'generate', pipeline }
-  if output ~= nil then
-    cmd = vim.list_extend(cmd, { '--output', output })
-  end
-  local result = vim.system(cmd, { text = true }):wait()
+  local result = system(cmd)
   if result.code ~= 0 then
     utils.error(string.format('error generating pipeline %s: %s', pipeline, result.stderr))
     return
@@ -25,10 +22,12 @@ M.generate = function(pipeline, output)
   return result.stdout
 end
 
+---@async
 ---@param scope schema_scope
----@return string?
+---@return string? stdout
 M.schema = function(scope)
-  local result = vim.system({ kpops, 'schema', scope }, { text = true }):wait()
+  utils.notify(string.format('generating %s schema', scope))
+  local result = system({ kpops, 'schema', scope })
   if result.code ~= 0 then
     utils.error(string.format('error generating %s schema: %s', scope, result.stderr))
     return
@@ -36,25 +35,26 @@ M.schema = function(scope)
   return result.stdout
 end
 
+---@async
 ---@return vim.Version
 M.version = function()
-  local result = vim.system({ kpops, '--version' }, { text = true }):wait()
-  return assert(vim.version.parse(result.stdout))
+  local result = system({ kpops, '--version' })
+  local version = assert(vim.version.parse(result.stdout))
+  return version
 end
 
 ---@async
 ---@param ... string
----@return vim.SystemObj
+---@return vim.SystemCompleted
 M.arbitrary = function(...)
-  local task = vim.system({ kpops, ... }, { text = true }, function(result)
-    if result.code ~= 0 and result.stderr then
-      utils.error(result.stderr)
-    end
-    if result.stdout then
-      M.notify(result.stdout)
-    end
-  end)
-  return task
+  local result = system({ kpops, ... })
+  if result.code ~= 0 and result.stderr then
+    utils.error(result.stderr)
+  end
+  if result.stdout then
+    utils.notify(result.stdout)
+  end
+  return result
 end
 
 return M

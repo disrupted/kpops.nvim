@@ -2,6 +2,7 @@ local kpops = require('kpops.cli')
 local schema = require('kpops.schema')
 local utils = require('kpops.utils')
 local KPOPS = require('kpops.consts').KPOPS
+local coop = require('coop')
 
 local M = {}
 
@@ -10,10 +11,13 @@ local commands = { 'generate', 'version' }
 
 M.setup = function()
   vim.api.nvim_create_user_command(KPOPS, function(opts)
-    require('kpops.commands').kpops(unpack(opts.fargs))
-  end, { complete = require('kpops.commands').kpops_command_complete, nargs = '*' })
+    coop.spawn(function()
+      M.kpops(unpack(opts.fargs))
+    end)
+  end, { complete = M.kpops_command_complete, nargs = '*' })
 end
 
+---@async
 ---@param command kpops_command
 ---@param ... string
 M.kpops = function(command, ...)
@@ -46,6 +50,7 @@ M.kpops_command_complete = function(arg_lead, cmd)
   end
 end
 
+---@async
 M.generate = function()
   local fname = vim.api.nvim_buf_get_name(0)
   local scope = assert(schema.match_kpops_file(fname))
@@ -71,6 +76,7 @@ M.generate = function()
   vim.lsp.buf_attach_client(buf, client.id)
 end
 
+---@async
 M.version = function()
   local version = kpops.version()
   utils.notify(string.format('%s %d.%d.%d', KPOPS, version.major, version.minor, version.patch))

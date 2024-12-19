@@ -1,5 +1,33 @@
 local utils = require('kpops.utils')
+local coop = require('coop')
+
 local M = {}
+
+---@alias lsp_schema table<string, string|string[]>
+
+---@param scope schema_scope
+---@param schema_path string
+---@return lsp_schema
+local function make_schema(scope, schema_path)
+  return {
+    [schema_path] = {
+      string.format('%s.yaml', scope),
+      string.format('%s_*.yaml', scope),
+    },
+  }
+end
+
+---@param schemas lsp_schema
+---@param scope schema_scope
+---@return boolean
+local function schema_exists(schemas, scope)
+  for _, registered_schema in ipairs(vim.tbl_keys(schemas)) do
+    if registered_schema:match(scope) then
+      return true
+    end
+  end
+  return false
+end
 
 M.setup = function()
   local config = require('kpops.config').config
@@ -12,33 +40,35 @@ M.setup = function()
         return vim.fs.root(filename, { '.git' }) or vim.uv.cwd()
       end,
       on_attach = function(client, bufnr)
-        if config.kpops.generate_schema then
+        coop.spawn(function()
           local schema = require('kpops.schema')
-          local filename = vim.api.nvim_buf_get_name(bufnr)
-          local scope = assert(schema.match_kpops_file(filename))
-          local schema_path = schema.generate(scope)
-          if not schema_path then
+          local schemas = client.config.settings.yaml.schemas
+          if config.kpops.generate_schema then
+            local filename = vim.api.nvim_buf_get_name(bufnr)
+            local scope = assert(schema.match_kpops_file(filename))
+
+            if schema_exists(schemas, scope) then
+              return
+            end
+
+            local schema_path = assert(schema.generate(scope))
+            schemas = vim.tbl_extend('force', schemas, make_schema(scope, schema_path))
+          elseif vim.tbl_isempty(client.config.settings.yaml.schemas) then
+            for scope in pairs(schema.SCOPE) do
+              local schema_url = schema.online(scope)
+              if schema_url then
+                schemas = vim.tbl_extend('force', schemas, make_schema(scope, schema_url))
+              end
+            end
+          else
             return
           end
-          local schemas = client.config.settings.yaml.schemas
-
-          -- remove previously registered schema for scope
-          for _, registered_schema in ipairs(vim.tbl_keys(schemas)) do
-            if registered_schema:match(scope) then
-              schemas[registered_schema] = nil
-            end
-          end
-
-          -- register new schema
-          schemas[schema_path] = {
-            scope .. '.yaml',
-            scope .. '_*.yaml',
-          }
 
           utils.notify('reload schemas')
+          client.config.settings.yaml.schemas = schemas
           utils.notify(vim.inspect(client.config.settings.yaml.schemas), vim.log.levels.DEBUG)
           client.notify('workspace/didChangeConfiguration', { settings = client.config.settings })
-        end
+        end)
       end,
       single_file_support = false,
       settings = {

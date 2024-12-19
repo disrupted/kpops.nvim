@@ -13,7 +13,10 @@ example using [Lazy](https://github.com/folke/lazy.nvim) plugin manager
     'disrupted/kpops.nvim',
     cmd = 'KPOps',
     ft = 'yaml.kpops',
-    dependencies = { 'neovim/nvim-lspconfig' }
+    dependencies = {
+        'neovim/nvim-lspconfig',
+        'gregorias/coop.nvim',
+    },
     ---@module 'kpops.config'
     ---@type kpops.Opts
     opts = {},
@@ -39,5 +42,5 @@ Default Configuration (passed as `opts`)
     > disable diagnostics for missing property
     > these could be defined in the defaults (for pipeline.yaml)
     > or as environment variables (for config.yaml)
-- automatic schema generation for all KPOps user files (pipeline.yaml, defaults.yaml, config.yaml)
+- automatic schema generation in the background for all KPOps user files (pipeline.yaml, defaults.yaml, config.yaml)
 - CLI integration as Ex commands, e.g. `:KPOps generate`

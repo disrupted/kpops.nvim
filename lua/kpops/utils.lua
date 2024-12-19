@@ -1,28 +1,30 @@
 local KPOPS = require('kpops.consts').KPOPS
+local uv = require('coop.uv')
 
 ---@class KpopsUtils
 local M = {}
 
+---@async
 ---@param path string
 ---@param content string
 M.write_file = function(path, content)
-  local fd = assert(vim.uv.fs_open(path, 'w', 438))
-  assert(vim.uv.fs_write(fd, content, 0))
-  assert(vim.uv.fs_close(fd))
+  local err_open, fd = uv.fs_open(path, 'w', 438)
+  assert(err_open == nil)
+  local err_write = uv.fs_write(fd, content, 0)
+  assert(err_write == nil)
+  local err_close = uv.fs_close(fd)
+  assert(err_close == nil)
 end
 
+---@async
 ---@param basename string
 ---@param content string
----@return string
+---@return string path
 M.write_tmpfile = function(basename, content)
   local path = os.tmpname()
-  if basename ~= nil then
-    local tmpdir = vim.fs.dirname(path)
-    path = vim.fs.joinpath(tmpdir, basename)
-  end
-  local fd = assert(vim.uv.fs_open(path, 'w', 438))
-  assert(vim.uv.fs_write(fd, content, 0))
-  assert(vim.uv.fs_close(fd))
+  local tmpdir = vim.fs.dirname(path)
+  path = vim.fs.joinpath(tmpdir, basename)
+  M.write_file(path, content)
   return path
 end
 

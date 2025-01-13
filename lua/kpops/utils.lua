@@ -10,6 +10,7 @@ local M = {}
 M.write_file = function(path, content)
   local err_open, fd = uv.fs_open(path, 'w', 438)
   assert(err_open == nil)
+  assert(fd)
   local err_write = uv.fs_write(fd, content, 0)
   assert(err_write == nil)
   local err_close = uv.fs_close(fd)

@@ -12,7 +12,7 @@ end
 ---@async
 ---@param pipeline string
 ---@return string? stdout
-M.generate = function(pipeline, output)
+M.generate = function(pipeline)
   local cmd = { kpops, 'generate', pipeline }
   local result = system(cmd)
   if result.code ~= 0 then

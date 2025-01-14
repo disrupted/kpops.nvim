@@ -1,7 +1,7 @@
 local M = {}
 
 ---@class kpops.Config
----@field yamlls? lspconfig.Config: vim.lsp.ClientConfig
+---@field yamlls? vim.lsp.Config
 ---@field kpops kpops.Config.Kpops
 
 ---@class kpops.Config.Kpops
@@ -15,6 +15,10 @@ local defaults = {
         editor = { formatOnType = true },
         ---@type table<string, string | string[]>
         schemas = {},
+      },
+      redhat = {
+        -- https://github.com/redhat-developer/vscode-redhat-telemetry#how-to-disable-telemetry-reporting
+        telemetry = { enabled = false },
       },
     },
   },

@@ -1,4 +1,3 @@
-local coop = require('coop')
 local utils = require('kpops.utils')
 local schema = require('kpops.schema')
 
@@ -35,13 +34,13 @@ M.watch = function()
 end
 
 M.refresh_schema = function()
-  coop.spawn(function()
-    local _, client = next(vim.lsp.get_clients({ name = 'kpops' }))
-    if not client then
-      M.close()
-      return
-    end
+  local _, client = next(vim.lsp.get_clients({ name = 'kpops' }))
+  if not client then
+    M.close()
+    return
+  end
 
+  require('coop').spawn(function()
     vim.iter({ schema.SCOPE.pipeline, schema.SCOPE.defaults }):each(function(scope)
       assert(schema.generate(scope))
       utils.notify(string.format('reload %s schema', scope))

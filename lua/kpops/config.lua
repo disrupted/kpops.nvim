@@ -5,7 +5,8 @@ local M = {}
 ---@field kpops kpops.Config.Kpops
 
 ---@class kpops.Config.Kpops
----@field generate_schema boolean
+---@field generate_schema boolean whether to generate schema
+---@field watch boolean wether to watch for changes to the kpops.components package
 
 ---@return kpops.Config
 local defaults = {
@@ -24,6 +25,7 @@ local defaults = {
   },
   kpops = {
     generate_schema = true,
+    watch = true,
   },
 }
 

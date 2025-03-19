@@ -65,6 +65,7 @@ M.setup = function()
         client.config.settings.yaml.schemas = schemas
         utils.notify(vim.inspect(client.config.settings.yaml.schemas), vim.log.levels.DEBUG)
         client:notify('workspace/didChangeConfiguration', { settings = client.config.settings })
+        require('kpops.watcher').setup()
       end)
     end,
     settings = config.yamlls.settings,

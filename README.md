@@ -44,6 +44,7 @@ Default Configuration (passed as `opts`)
     > these could be defined in the defaults (for pipeline.yaml)
     > or as environment variables (for config.yaml)
 - automatic schema generation in the background for all KPOps user files (pipeline.yaml, defaults.yaml, config.yaml)
+- refresh pipeline and defaults schema on changes to Python custom `kpops.components` package
 - CLI integration as Ex commands, e.g. `:KPOps generate`
 - custom TreeSitter parser
 - optional: [overseer.nvim](https://github.com/stevearc/overseer.nvim) integration for running tasks

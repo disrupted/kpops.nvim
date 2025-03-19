@@ -1,4 +1,4 @@
-if not vim.fn.executable('kpops') == 1 then
+if vim.fn.executable('kpops') ~= 1 then
   return
 end
 vim.filetype.add({

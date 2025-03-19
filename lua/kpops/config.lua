@@ -14,6 +14,7 @@ local defaults = {
     settings = {
       yaml = {
         editor = { formatOnType = true },
+        schemaStore = { enable = false },
         ---@type table<string, string | string[]>
         schemas = {},
       },

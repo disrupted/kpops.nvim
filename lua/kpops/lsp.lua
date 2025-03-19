@@ -64,7 +64,7 @@ M.setup = function()
         utils.notify('reload schemas')
         client.config.settings.yaml.schemas = schemas
         utils.notify(vim.inspect(client.config.settings.yaml.schemas), vim.log.levels.DEBUG)
-        client.notify('workspace/didChangeConfiguration', { settings = client.config.settings })
+        client:notify('workspace/didChangeConfiguration', { settings = client.config.settings })
       end)
     end,
     settings = config.yamlls.settings,

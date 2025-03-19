@@ -9,12 +9,12 @@ local M = {}
 ---@param content string
 M.write_file = function(path, content)
   local err_open, fd = uv.fs_open(path, 'w', 438)
-  assert(err_open == nil)
+  assert(not err_open, err_open)
   assert(fd)
   local err_write = uv.fs_write(fd, content, 0)
-  assert(err_write == nil)
+  assert(not err_write, err_write)
   local err_close = uv.fs_close(fd)
-  assert(err_close == nil)
+  assert(not err_close, err_close)
 end
 
 ---@async

@@ -20,7 +20,7 @@ end
 ---@param schemas lsp_schema
 ---@param scope schema_scope
 ---@return boolean
-local function schema_exists(schemas, scope)
+M.schema_exists = function(schemas, scope)
   for _, registered_schema in ipairs(vim.tbl_keys(schemas)) do
     if registered_schema:match(scope) then
       return true
@@ -39,12 +39,13 @@ M.setup = function()
     on_attach = function(client, bufnr)
       coop.spawn(function()
         local schema = require('kpops.schema')
+        ---@type lsp_schema
         local schemas = client.config.settings.yaml.schemas
         if config.kpops.generate_schema then
           local filename = vim.api.nvim_buf_get_name(bufnr)
           local scope = assert(schema.match_kpops_file(filename))
 
-          if schema_exists(schemas, scope) then
+          if M.schema_exists(schemas, scope) then
             return
           end
 

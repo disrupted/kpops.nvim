@@ -1,5 +1,6 @@
 local utils = require('kpops.utils')
 local schema = require('kpops.schema')
+local lsp = require('kpops.lsp')
 
 local M = {}
 local folder_to_watch = 'kpops/components'
@@ -42,6 +43,11 @@ M.refresh_schema = function()
 
   require('coop').spawn(function()
     vim.iter({ schema.SCOPE.pipeline, schema.SCOPE.defaults }):each(function(scope)
+      ---@type lsp_schema
+      local schemas = client.config.settings.yaml.schemas
+      if not lsp.schema_exists(schemas, scope) then
+        return
+      end
       assert(schema.generate(scope))
       utils.notify(string.format('reload %s schema', scope))
       client:notify('workspace/didChangeConfiguration', { settings = client.config.settings })

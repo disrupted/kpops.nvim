@@ -51,6 +51,7 @@ M.setup = function()
 
           local schema_path = assert(schema.generate(scope))
           schemas = vim.tbl_extend('force', schemas, make_schema(scope, schema_path))
+          utils.notify(string.format('load %s schema', scope))
         elseif vim.tbl_isempty(client.config.settings.yaml.schemas) then
           for scope in pairs(schema.SCOPE) do
             local schema_url = schema.online(scope)
@@ -58,11 +59,11 @@ M.setup = function()
               schemas = vim.tbl_extend('force', schemas, make_schema(scope, schema_url))
             end
           end
+          utils.notify('load schemas')
         else
           return
         end
 
-        utils.notify('reload schemas')
         client.config.settings.yaml.schemas = schemas
         utils.notify(vim.inspect(client.config.settings.yaml.schemas), vim.log.levels.DEBUG)
         client:notify('workspace/didChangeConfiguration', { settings = client.config.settings })

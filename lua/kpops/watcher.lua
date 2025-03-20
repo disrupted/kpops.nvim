@@ -39,7 +39,6 @@ M.refresh_schema = function()
   if refresh_schema_active then
     return
   end
-  refresh_schema_active = true
   local _, client = next(vim.lsp.get_clients({ name = 'kpops' }))
   if not client then
     M.close()
@@ -47,9 +46,10 @@ M.refresh_schema = function()
   end
 
   require('coop').spawn(function()
+    refresh_schema_active = true
+    ---@type lsp_schema
+    local schemas = client.config.settings.yaml.schemas
     vim.iter({ schema.SCOPE.pipeline, schema.SCOPE.defaults }):each(function(scope)
-      ---@type lsp_schema
-      local schemas = client.config.settings.yaml.schemas
       if not lsp.schema_exists(schemas, scope) then
         return
       end

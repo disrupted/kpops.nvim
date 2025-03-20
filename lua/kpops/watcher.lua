@@ -34,7 +34,12 @@ M.watch = function()
   utils.notify(('initialized watcher on %s'):format(folder_to_watch), vim.log.levels.DEBUG)
 end
 
+local refresh_schema_active = false
 M.refresh_schema = function()
+  if refresh_schema_active then
+    return
+  end
+  refresh_schema_active = true
   local _, client = next(vim.lsp.get_clients({ name = 'kpops' }))
   if not client then
     M.close()
@@ -52,6 +57,7 @@ M.refresh_schema = function()
       utils.notify(string.format('reload %s schema', scope))
       client:notify('workspace/didChangeConfiguration', { settings = client.config.settings })
     end)
+    refresh_schema_active = false
   end)
 end
 

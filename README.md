@@ -30,6 +30,7 @@ Default Configuration (passed as `opts`)
 {
     kpops = {
         generate_schema = true,
+        watch = true,
     }
 }
 ```
@@ -40,7 +41,7 @@ Default Configuration (passed as `opts`)
   - schema validation
   - autocompletion
   - custom diagnostics handler
-    > disable diagnostics for missing property
+    > disable diagnostics for missing property,
     > these could be defined in the defaults (for pipeline.yaml)
     > or as environment variables (for config.yaml)
 - automatic schema generation in the background for all KPOps user files (pipeline.yaml, defaults.yaml, config.yaml)

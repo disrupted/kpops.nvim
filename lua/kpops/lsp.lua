@@ -20,7 +20,7 @@ end
 ---@param schemas lsp_schema
 ---@param scope schema_scope
 ---@return boolean
-local function schema_exists(schemas, scope)
+M.schema_exists = function(schemas, scope)
   for _, registered_schema in ipairs(vim.tbl_keys(schemas)) do
     if registered_schema:match(scope) then
       return true
@@ -39,17 +39,19 @@ M.setup = function()
     on_attach = function(client, bufnr)
       coop.spawn(function()
         local schema = require('kpops.schema')
+        ---@type lsp_schema
         local schemas = client.config.settings.yaml.schemas
         if config.kpops.generate_schema then
           local filename = vim.api.nvim_buf_get_name(bufnr)
           local scope = assert(schema.match_kpops_file(filename))
 
-          if schema_exists(schemas, scope) then
+          if M.schema_exists(schemas, scope) then
             return
           end
 
           local schema_path = assert(schema.generate(scope))
           schemas = vim.tbl_extend('force', schemas, make_schema(scope, schema_path))
+          utils.notify(string.format('load %s schema', scope))
         elseif vim.tbl_isempty(client.config.settings.yaml.schemas) then
           for scope in pairs(schema.SCOPE) do
             local schema_url = schema.online(scope)
@@ -57,14 +59,15 @@ M.setup = function()
               schemas = vim.tbl_extend('force', schemas, make_schema(scope, schema_url))
             end
           end
+          utils.notify('load schemas')
         else
           return
         end
 
-        utils.notify('reload schemas')
         client.config.settings.yaml.schemas = schemas
         utils.notify(vim.inspect(client.config.settings.yaml.schemas), vim.log.levels.DEBUG)
         client:notify('workspace/didChangeConfiguration', { settings = client.config.settings })
+        require('kpops.watcher').setup()
       end)
     end,
     settings = config.yamlls.settings,

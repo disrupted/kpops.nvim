@@ -46,6 +46,7 @@ jobs:
     strategy:
       matrix:
         neovim_version: ["nightly", "stable"]
+    if: false # TODO: enable once there are tests
     steps:
       - uses: actions/checkout@v4
 

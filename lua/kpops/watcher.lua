@@ -47,15 +47,16 @@ M.refresh_schema = function()
 
   require('coop').spawn(function()
     refresh_schema_active = true
-    ---@type lsp_schema
-    local schemas = client.config.settings.yaml.schemas
+    ---@type yaml_ls.lsp.Config|vim.lsp.ClientConfig
+    local client_config = client.config
+    local schemas = client_config.settings.yaml.schemas
     vim.iter({ schema.SCOPE.pipeline, schema.SCOPE.defaults }):each(function(scope)
       if not lsp.schema_exists(schemas, scope) then
         return
       end
       assert(schema.generate(scope))
       utils.notify(string.format('reload %s schema', scope))
-      client:notify('workspace/didChangeConfiguration', { settings = client.config.settings })
+      client:notify('workspace/didChangeConfiguration', { settings = client_config.settings })
     end)
     refresh_schema_active = false
   end)

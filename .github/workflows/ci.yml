@@ -4,6 +4,7 @@ on: [push]
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,8 +17,8 @@ jobs:
           args: --check .
 
   docs:
+    name: vimdoc
     runs-on: ubuntu-latest
-    name: pandoc to vimdoc
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
       # added or changed files to the repository.
@@ -40,31 +41,16 @@ jobs:
           commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
 
   test:
-    name: Run Test
-    runs-on: ${{ matrix.os }}
+    name: Test
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        neovim_version: ["nightly", "stable"]
+    if: false # TODO: enable once there are tests
     steps:
       - uses: actions/checkout@v4
 
-      - uses: rhysd/action-setup-vim@v1
-        id: vim
+      - name: Run tests
+        uses: nvim-neorocks/nvim-busted-action@v1
         with:
-          neovim: true
-          version: nightly
-
-      - name: luajit
-        uses: leafo/gh-actions-lua@v10
-        with:
-          luaVersion: "luajit-openresty"
-
-      - name: luarocks
-        uses: leafo/gh-actions-luarocks@v4
-
-      - name: run test
-        shell: bash
-        run: |
-          luarocks install luacheck
-          luarocks install vusted
-          vusted ./test
+          nvim_version: ${{ matrix.neovim_version }}

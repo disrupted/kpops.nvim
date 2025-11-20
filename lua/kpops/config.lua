@@ -1,8 +1,18 @@
 local M = {}
 
 ---@class kpops.Config
----@field yamlls? vim.lsp.Config
+---@field yamlls? yaml_ls.lsp.Config | vim.lsp.Config
 ---@field kpops kpops.Config.Kpops
+
+---@class yaml_ls.lsp.Config
+---@field settings yaml_ls.settings
+
+---@class yaml_ls.settings
+---@field yaml yaml_ls.settings.yaml
+
+---@class yaml_ls.settings.yaml
+---@field schemas yaml_ls.settings.yaml.schemas
+---@alias yaml_ls.settings.yaml.schemas table<string, string|string[]>
 
 ---@class kpops.Config.Kpops
 ---@field generate_schema boolean whether to generate schema
@@ -15,7 +25,6 @@ local defaults = {
       yaml = {
         editor = { formatOnType = true },
         schemaStore = { enable = false },
-        ---@type table<string, string | string[]>
         schemas = {},
       },
       redhat = {

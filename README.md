@@ -14,7 +14,7 @@ example using [Lazy](https://github.com/folke/lazy.nvim) plugin manager
     cmd = 'KPOps',
     ft = 'yaml.kpops',
     dependencies = {
-        'nvim-treesitter/nvim-treesitter',
+        'nvim-treesitter/nvim-treesitter', -- main branch, old master branch is not supported
         'gregorias/coop.nvim',
         'stevearc/overseer.nvim', -- optional
     },
